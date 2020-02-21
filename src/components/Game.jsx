@@ -1,5 +1,5 @@
-import React from 'react';
-import Board from './Board';
+import React from 'react'
+import Board from './Board'
 
 class Game extends React.Component {
 	constructor(props) {
@@ -26,7 +26,7 @@ class Game extends React.Component {
 
 		squares[i] = this.state.xIsNext ? 'X' : 'O'
 		this.setState({
-			history: [...history, { squares }],
+			history: [...history, { squares, i }],
 			stepNumber: history.length,
 			xIsNext: !this.state.xIsNext
 		})
@@ -45,11 +45,13 @@ class Game extends React.Component {
 		const winner = calculationWinner(current.squares)
 
 		const moves = history.map((step, move) => {
+			const rowNumber = (Math.floor(step.i / 3) + 1)
+			const colNumber = step.i - ((rowNumber - 1) * 3) + 1
 			const desc = move ?
-				'Перейти к ходу #' + move :
+				`Перейти к ходу #${move} (${colNumber}, ${rowNumber})` :
 				'К началу игры'
 			return (
-				<li key={move}>					
+				<li key={move}>
 					<button onClick={() => this.jumpTo(move)}>{desc}</button>
 				</li>
 			)
@@ -57,9 +59,9 @@ class Game extends React.Component {
 
 		let status
 		if (winner) {
-			status = 'Winner: ' + winner
+			status = 'Выиграл ' + winner
 		} else {
-			status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
+			status = 'Следующий ход: ' + (this.state.xIsNext ? 'X' : 'O')
 		}
 
 		return (
