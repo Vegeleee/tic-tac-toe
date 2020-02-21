@@ -50,6 +50,7 @@ class Game extends React.Component {
 			const desc = move ?
 				`Перейти к ходу #${move} (${colNumber}, ${rowNumber})` :
 				'К началу игры'
+				
 			return (
 				<li key={move}>
 					<button onClick={() => this.jumpTo(move)}>{desc}</button>
