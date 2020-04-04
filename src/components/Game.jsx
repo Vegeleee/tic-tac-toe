@@ -5,11 +5,13 @@ class Game extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			history: [{
-				squares: Array(9).fill(null)
-			}],
+			history: [
+				{
+					squares: Array(9).fill(null),
+				},
+			],
 			stepNumber: 0,
-			xIsNext: true
+			xIsNext: true,
 		}
 
 		this.handleClick = this.handleClick.bind(this)
@@ -28,14 +30,14 @@ class Game extends React.Component {
 		this.setState({
 			history: [...history, { squares, i }],
 			stepNumber: history.length,
-			xIsNext: !this.state.xIsNext
+			xIsNext: !this.state.xIsNext,
 		})
 	}
 
 	jumpTo(step) {
 		this.setState({
 			stepNumber: step,
-			xIsNext: (step % 2) === 0
+			xIsNext: step % 2 === 0,
 		})
 	}
 
@@ -45,15 +47,22 @@ class Game extends React.Component {
 		const winner = calculationWinner(current.squares)
 
 		const moves = history.map((step, move) => {
-			const rowNumber = (Math.floor(step.i / 3) + 1)
-			const colNumber = step.i - ((rowNumber - 1) * 3) + 1
-			const desc = move ?
-				`Перейти к ходу #${move} (${colNumber}, ${rowNumber})` :
-				'К началу игры'
-				
+			const rowNumber = Math.floor(step.i / 3) + 1
+			const colNumber = step.i - (rowNumber - 1) * 3 + 1
+			const desc = move
+				? `Перейти к ходу #${move} (${colNumber}, ${rowNumber})`
+				: 'К началу игры'
+
+			let currentMoveStyle = {}
+			if (move === this.state.stepNumber) {
+				currentMoveStyle = { fontWeight: 'bold', backgroundColor: '#ededed' }
+			}
+
 			return (
 				<li key={move}>
-					<button onClick={() => this.jumpTo(move)}>{desc}</button>
+					<button onClick={() => this.jumpTo(move)} style={currentMoveStyle}>
+						{desc}
+					</button>
 				</li>
 			)
 		})
@@ -68,10 +77,7 @@ class Game extends React.Component {
 		return (
 			<div className="game">
 				<div className="game-board">
-					<Board
-						squares={current.squares}
-						onClick={this.handleClick}
-					/>
+					<Board squares={current.squares} onClick={this.handleClick} />
 				</div>
 				<div className="game-info">
 					<div>{status}</div>
@@ -91,7 +97,7 @@ const calculationWinner = (squares) => {
 		[1, 4, 7],
 		[2, 5, 8],
 		[0, 4, 8],
-		[2, 4, 6]
+		[2, 4, 6],
 	]
 
 	for (let i = 0; i < lines.length; i++) {
