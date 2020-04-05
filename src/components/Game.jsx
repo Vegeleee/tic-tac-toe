@@ -12,6 +12,7 @@ class Game extends React.Component {
 			],
 			stepNumber: 0,
 			xIsNext: true,
+			reverseList: false,
 		}
 
 		this.handleClick = this.handleClick.bind(this)
@@ -46,7 +47,7 @@ class Game extends React.Component {
 		const current = history[this.state.stepNumber]
 		const winner = calculationWinner(current.squares)
 
-		const moves = history.map((step, move) => {
+		let moves = history.map((step, move) => {
 			const rowNumber = Math.floor(step.i / 3) + 1
 			const colNumber = step.i - (rowNumber - 1) * 3 + 1
 			const desc = move
@@ -67,6 +68,8 @@ class Game extends React.Component {
 			)
 		})
 
+		moves = this.state.reverseList ? [...moves].reverse() : moves
+
 		let status
 		if (winner) {
 			status = 'Выиграл ' + winner
@@ -82,6 +85,16 @@ class Game extends React.Component {
 				<div className="game-info">
 					<div>{status}</div>
 					<ol>{moves}</ol>
+					{moves.length > 1 && (
+						<button
+							onClick={() =>
+								this.setState({ reverseList: !this.state.reverseList })
+							}
+						>
+							Сортировать по
+							{this.state.reverseList ? ' возрастанию' : ' убыванию'}
+						</button>
+					)}
 				</div>
 			</div>
 		)
