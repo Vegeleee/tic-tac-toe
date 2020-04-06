@@ -11,6 +11,7 @@ const Board = ({ squares, onClick, winSquares }) => {
 		const winSquare = winSquares ? winSquares.includes(i) : false
 		return (
 			<Square
+				key={i}
 				value={squares[i]}
 				winSquare={winSquare}
 				onClick={() => onClick(i)}
@@ -45,7 +46,11 @@ const Board = ({ squares, onClick, winSquares }) => {
 		const board = []
 
 		for (let i = 0; i < rowsCount; i++) {
-			const row = <div className="board-row">{renderRow(i, colsCount)}</div>
+			const row = (
+				<div key={i} className="board-row">
+					{renderRow(i, colsCount)}
+				</div>
+			)
 			board.push(row)
 		}
 
