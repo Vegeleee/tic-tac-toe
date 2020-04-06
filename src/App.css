@@ -1,9 +1,10 @@
 body {
-	font: 14px "Century Gothic", Futura, sans-serif;
+	font: 14px 'Century Gothic', Futura, sans-serif;
 	margin: 20px;
 }
 
-ol, ul {
+ol,
+ul {
 	padding-left: 30px;
 }
 
@@ -40,6 +41,10 @@ ol, ul {
 	background-color: #ddd;
 }
 
+.winSquare {
+	background-color: #ededed;
+}
+
 .game {
 	display: flex;
 	flex-direction: row;
@@ -47,4 +52,9 @@ ol, ul {
 
 .game-info {
 	margin-left: 20px;
+}
+
+.currentMove {
+	font-weight: bold;
+	background-color: #ededed;
 }

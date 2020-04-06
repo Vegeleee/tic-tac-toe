@@ -1,15 +1,13 @@
 import React from 'react'
 
 const Square = ({ value, winSquare, onClick }) => {
-	let winStyle = {}
+	const classes = ['square']
 	if (winSquare) {
-		winStyle = {
-			backgroundColor: '#ededed',
-		}
+		classes.push('winSquare')
 	}
 
 	return (
-		<button className="square" onClick={onClick} style={winStyle}>
+		<button className={classes.join(' ')} onClick={onClick}>
 			{value}
 		</button>
 	)

@@ -53,14 +53,17 @@ class Game extends React.Component {
 				? `Перейти к ходу #${move} (${colNumber}, ${rowNumber})`
 				: 'К началу игры'
 
-			let currentMoveStyle = {}
+			let classes = []
 			if (move === this.state.stepNumber) {
-				currentMoveStyle = { fontWeight: 'bold', backgroundColor: '#ededed' }
+				classes.push('currentMove')
 			}
 
 			return (
 				<li key={move}>
-					<button onClick={() => this.jumpTo(move)} style={currentMoveStyle}>
+					<button
+						onClick={() => this.jumpTo(move)}
+						className={classes.join(' ')}
+					>
 						{desc}
 					</button>
 				</li>
