@@ -1,14 +1,21 @@
 import React from 'react'
 import Square from './Square'
 
-const Board = ({ squares, onClick }) => {
+const Board = ({ squares, onClick, winSquares }) => {
 	/*
 		Рендерит клетку
 		Принимает порядковый номер клетки
 		Возвращает компонент Square
 	*/
 	const renderSquare = (i) => {
-		return <Square value={squares[i]} onClick={() => onClick(i)} />
+		const winSquare = winSquares ? winSquares.includes(i) : false
+		return (
+			<Square
+				value={squares[i]}
+				winSquare={winSquare}
+				onClick={() => onClick(i)}
+			/>
+		)
 	}
 
 	/*
