@@ -18,14 +18,21 @@ class Game extends React.Component {
 		this.handleClick = this.handleClick.bind(this)
 	}
 
+	/*
+		Обрабатывает клики по клеткам
+		Принимает номер клетки, по которой произошел клик, присваивает клетке значение,
+		обновляет состояние
+	*/
 	handleClick(i) {
-		const history = this.state.history.slice(0, this.state.stepNumber + 1)
+		const history = this.state.history.slice(0, this.state.stepNumber + 1) // История ходов до текущего номера хода включительно
 		const current = history[history.length - 1]
 		const squares = current.squares.slice()
 
+		// Не обрабатывать клики, если побелитель определен (игра окончена) или клекте уже присвоено значение
 		if (calculationWinner(squares).winner || squares[i]) {
 			return
 		}
+
 		squares[i] = this.state.xIsNext ? 'X' : 'O'
 		this.setState({
 			history: [...history, { squares, i }],
@@ -34,6 +41,10 @@ class Game extends React.Component {
 		})
 	}
 
+	/*
+		Обновляет состояние
+		Меняет номер хода и текущего игрока
+	*/
 	jumpTo(step) {
 		this.setState({
 			stepNumber: step,
@@ -46,13 +57,15 @@ class Game extends React.Component {
 		const current = history[this.state.stepNumber]
 		const { winner, winSquares } = calculationWinner(current.squares)
 
+		// Формирование списка ходов
 		let moves = history.map((step, move) => {
-			const rowNumber = Math.floor(step.i / 3) + 1
-			const colNumber = step.i - (rowNumber - 1) * 3 + 1
+			const rowNumber = Math.floor(step.i / 3) + 1 // Номер строки в которой находится клетка i
+			const colNumber = step.i - (rowNumber - 1) * 3 + 1 // Номер колонки в которой находится клетка i
 			const desc = move
 				? `Перейти к ходу #${move} (${colNumber}, ${rowNumber})`
 				: 'К началу игры'
 
+			// Выделение выбранного эдемента в списке ходов
 			let classes = []
 			if (move === this.state.stepNumber) {
 				classes.push('currentMove')
@@ -70,8 +83,7 @@ class Game extends React.Component {
 			)
 		})
 
-		moves = this.state.reverseList ? [...moves].reverse() : moves
-
+		// Определение статуса
 		let status
 		if (winner) {
 			status = 'Выиграл ' + winner
@@ -92,7 +104,7 @@ class Game extends React.Component {
 				</div>
 				<div className="game-info">
 					<div>{status}</div>
-					<ol>{moves}</ol>
+					<ol>{this.state.reverseList ? moves.reverse() : moves}</ol>
 					{moves.length > 1 && (
 						<button
 							onClick={() =>
@@ -109,6 +121,13 @@ class Game extends React.Component {
 	}
 }
 
+/*
+	Определяет победителя
+	Принимает массив клеток
+	Обходит массив выигрышных комбинаций и проверяет равны ли значения ячеек в рамках одной комбинации
+	Если равны, возырвщает объект содержащий победителя (Х или О) и выигрышную комбинацию
+	Еслине равны, возвращает объект, у которого поля победителя и комбинации равны null
+*/
 const calculationWinner = (squares) => {
 	const lines = [
 		[0, 1, 2],
