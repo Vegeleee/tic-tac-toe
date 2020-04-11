@@ -1,31 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Board from './Board'
 
-class Game extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			history: [
-				{
-					squares: Array(9).fill(null),
-				},
-			],
-			stepNumber: 0,
-			xIsNext: true,
-			reverseList: false,
-		}
-
-		this.handleClick = this.handleClick.bind(this)
-	}
+const Game = () => {
+	const [history, setHistory] = useState([
+		{
+			squares: Array(9).fill(null),
+		},
+	])
+	const [stepNumber, setStepNumber] = useState(0)
+	const [xIsNext, setXIsNext] = useState(true)
+	const [reverseList, setReverseList] = useState(false)
 
 	/*
 		Обрабатывает клики по клеткам
 		Принимает номер клетки, по которой произошел клик, присваивает клетке значение,
 		обновляет состояние
 	*/
-	handleClick(i) {
-		const history = this.state.history.slice(0, this.state.stepNumber + 1) // История ходов до текущего номера хода включительно
-		const current = history[history.length - 1]
+	const handleClick = (i) => {
+		const historyToStep = history.slice(0, stepNumber + 1) // История ходов до текущего номера хода включительно
+		const current = historyToStep[historyToStep.length - 1]
 		const squares = current.squares.slice()
 
 		// Не обрабатывать клики, если побелитель определен (игра окончена) или клекте уже присвоено значение
@@ -33,92 +26,84 @@ class Game extends React.Component {
 			return
 		}
 
-		squares[i] = this.state.xIsNext ? 'X' : 'O'
-		this.setState({
-			history: [...history, { squares, i }],
-			stepNumber: history.length,
-			xIsNext: !this.state.xIsNext,
-		})
+		squares[i] = xIsNext ? 'X' : 'O'
+
+		setHistory([...historyToStep, { squares, i }])
+		setStepNumber(historyToStep.length)
+		setXIsNext(!xIsNext)
 	}
 
 	/*
 		Обновляет состояние
 		Меняет номер хода и текущего игрока
 	*/
-	jumpTo(step) {
-		this.setState({
-			stepNumber: step,
-			xIsNext: step % 2 === 0,
-		})
+	const jumpTo = (step) => {
+		setStepNumber(step)
+		setXIsNext(step % 2 === 0)
 	}
 
-	render() {
-		const history = this.state.history
-		const current = history[this.state.stepNumber]
-		const { winner, winSquares } = calculationWinner(current.squares)
+	const current = history[stepNumber]
+	const { winner, winSquares } = calculationWinner(current.squares)
 
-		// Формирование списка ходов
-		let moves = history.map((step, move) => {
-			const rowNumber = Math.floor(step.i / 3) + 1 // Номер строки в которой находится клетка i
-			const colNumber = step.i - (rowNumber - 1) * 3 + 1 // Номер колонки в которой находится клетка i
-			const desc = move
-				? `Перейти к ходу #${move} (${colNumber}, ${rowNumber})`
-				: 'К началу игры'
+	// Формирование списка ходов
+	let moves = history.map((step, move) => {
+		const rowNumber = Math.floor(step.i / 3) + 1 // Номер строки в которой находится клетка i
+		const colNumber = step.i - (rowNumber - 1) * 3 + 1 // Номер колонки в которой находится клетка i
+		const desc = move
+			? `Перейти к ходу #${move} (${colNumber}, ${rowNumber})`
+			: 'К началу игры'
 
-			// Выделение выбранного эдемента в списке ходов
-			let classes = []
-			if (move === this.state.stepNumber) {
-				classes.push('currentMove')
-			}
-
-			return (
-				<li key={move}>
-					<button
-						onClick={() => this.jumpTo(move)}
-						className={classes.join(' ')}
-					>
-						{desc}
-					</button>
-				</li>
-			)
-		})
-
-		// Определение статуса
-		let status
-		if (winner) {
-			status = 'Выиграл ' + winner
-		} else if (!current.squares.includes(null)) {
-			status = 'Ничья'
-		} else {
-			status = 'Следующий ход: ' + (this.state.xIsNext ? 'X' : 'O')
+		// Выделение выбранного эдемента в списке ходов
+		let classes = []
+		if (move === stepNumber) {
+			classes.push('currentMove')
 		}
 
 		return (
-			<div className="game">
-				<div className="game-board">
-					<Board
-						squares={current.squares}
-						winSquares={winSquares}
-						onClick={this.handleClick}
-					/>
-				</div>
-				<div className="game-info">
-					<div>{status}</div>
-					<ol>{this.state.reverseList ? moves.reverse() : moves}</ol>
-					{moves.length > 1 && (
-						<button
-							onClick={() =>
-								this.setState({ reverseList: !this.state.reverseList })
-							}
-						>
-							Сортировать по
-							{this.state.reverseList ? ' возрастанию' : ' убыванию'}
-						</button>
-					)}
-				</div>
-			</div>
+			<li key={move}>
+				<button onClick={() => jumpTo(move)} className={classes.join(' ')}>
+					{desc}
+				</button>
+			</li>
 		)
+	})
+
+	// Определение статуса
+	let status
+	if (winner) {
+		status = 'Выиграл ' + winner
+	} else if (!current.squares.includes(null)) {
+		status = 'Ничья'
+	} else {
+		status = 'Следующий ход: ' + (xIsNext ? 'X' : 'O')
 	}
+
+	return (
+		<div className="game">
+			<div className="game-board">
+				<Board
+					squares={current.squares}
+					winSquares={winSquares}
+					onClick={handleClick}
+				/>
+			</div>
+			<div className="game-info">
+				<div>{status}</div>
+				<ol>{reverseList ? moves.reverse() : moves}</ol>
+				{moves.length > 1 && (
+					<button
+						onClick={
+							() => setReverseList(!reverseList)
+							// this.setState({ reverseList: !this.state.reverseList })
+						}
+					>
+						Сортировать по
+						{reverseList ? ' возрастанию' : ' убыванию'}
+					</button>
+				)}
+			</div>
+		</div>
+	)
 }
 
 /*
